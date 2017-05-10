@@ -1,0 +1,59 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Office Status Information</title>
+	<link rel="stylesheet" href="themes/demo.min.css" />
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script>
+
+  $( document ).ready(function() {
+		function appendToUl(d){
+		  $("#info").append('<li class="ui-li-static ui-body-a" data-form="ui-body-a" data-swatch="a" data-theme="a">'+d+'</li>');
+		}
+		// Create WebSocket connection.
+	  var socket = new WebSocket('ws://agilegw.local:1880/api/ws/calendar1');
+	  // Connection opened
+	  socket.addEventListener('open', function (event) {
+	     //socket.send('Hello Server!');
+	  });
+		// Listen for messages
+		socket.addEventListener('message', function (event) {
+			var entry = JSON.parse(event.data);
+			if(entry.state){
+				$("#info").empty();
+				if(entry.user)
+			  	appendToUl("Hello <b>"+entry.user+"</b>, you are using the <b> "+entry.auth + "</b> authentication type");
+				appendToUl("<b>state</b>: "+entry.state);
+				if(entry.status)
+			  	appendToUl("<b>status</b>: "+entry.status);
+			  if(entry.summary)
+			  	appendToUl("<b>summary</b>: "+entry.summary);
+			  if(entry.location)
+				  appendToUl("<b>location</b>: "+entry.location);
+	      console.log('Message from server', event.data);
+			}
+		});
+  });
+
+	</script>
+</head>
+<body>
+	<div data-role="page" data-theme="a">
+		<div data-role="header" data-position="inline">
+			<h1>Office Status Information</h1>
+		</div>
+		<div data-role="content" data-theme="a">
+			<ul id="info" class="ui-listview ui-listview-inset ui-corner-all ui-shadow" data-role="listview" data-inset="true">
+            <li class="ui-li-divider ui-bar-a ui-first-child" role="heading" data-role="list-divider" data-theme="a" data-swatch="a" data-form="ui-bar-a">Information Available</li>
+            <li class="ui-li-static ui-body-a" data-form="ui-body-a" data-swatch="a" data-theme="a">no information</li>
+
+		</ul>
+
+		</div>
+	</div>
+</body>
+</html>
